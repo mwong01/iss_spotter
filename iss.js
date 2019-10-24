@@ -21,7 +21,23 @@ const fetchMyIP = function(callback) {
     const data = JSON.parse(body);
     callback(null, data.ip);
   });
-  // use request to fetch IP address from JSON API
 };
 
-module.exports = { fetchMyIP };
+const fetchCoordsByIP = function(ip, callback) {
+  request.get(`https://ipvigilante.com/${ip}`, (error, response, body) => {
+    if (error) {
+      return callback(error, null);
+    }
+    if (response.statusCode !== 200) {
+      const msg = `Status Code ${response.statusCode} when fetching IP. Response: ${body}`;
+      callback(Error(msg), null);
+      return;
+    }
+    const coords = JSON.parse(body).data;
+    callback(null, `${coords.longitude} and ${coords.latitude}`);
+  });
+};
+
+module.exports = { fetchMyIP, fetchCoordsByIP };
+
+
